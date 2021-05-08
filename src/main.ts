@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { ParamValidateException } from './common/exceptions/param.validate.exception';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -29,8 +30,13 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   /**
+   * 获取配置文件service
+   */
+  const configService = app.get(ConfigService);
+
+  /**
    * 监听3000端口
    */
-  await app.listen(3000);
+  await app.listen(configService.get('app.port', '0.0.0.0'));
 }
 bootstrap();
