@@ -1,25 +1,42 @@
 import {
+  Body,
   Controller,
+  Header,
   Post,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { exec } from 'child_process';
+import { Response } from 'express';
+import { CommonException } from 'src/common/exceptions/common.exception';
+import { ExceptionCode } from 'src/common/exceptions/constants/exception.constants';
+import { fileInterceptorUtil } from 'src/common/utils/file.interceptor.util';
+import { JavaCompileOptionsDto } from './compile.dto';
+import { CompileService } from './compile.service';
 
 @Controller('compile')
 export class CompileController {
+  constructor(private readonly compileService: CompileService) {}
+
+  /**
+   * 上传并编译java
+   * @param file
+   * @param options
+   * @returns
+   */
   @Post('java')
-  @UseInterceptors(FileInterceptor('file'))
-  compileJava(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
-    exec(`javac -source 9 ${file.path}`, (err, stdout, stderr) => {
-      console.log('---------------');
-      console.log('err:', err);
-      console.log('---------------');
-      console.log('stdout:', stdout);
-      console.log('---------------');
-      console.log('stderr:', stderr);
-    });
+  @Header('Content-Type', 'application/octet-stream')
+  @UseInterceptors(fileInterceptorUtil('file', 'java')) // 拓展名不在这里校验了，太丑了
+  async compileJava(
+    @Res() res: Response,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() options: JavaCompileOptionsDto,
+  ) {
+    if (file == null) {
+      throw new CommonException(ExceptionCode.NOT_UPLOAD_FILE);
+    }
+
+    const path = await this.compileService.compileJava(file, options);
+    res.status(200).download(path);
   }
 }

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
-import { ErrCode } from './exception.interface';
+import { ErrCode } from './interfaces/exception.interface';
 
 export class CommonException extends HttpException {
   constructor(

@@ -46,7 +46,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
       path: request.url,
       method: request.method,
       errors,
-      timestamp: new Date().toLocaleDateString(),
+      timestamp: new Date().toLocaleString(),
     };
 
     Logger.error(
