@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsEnum, IsOptional } from 'class-validator';
-import { JdkVersion } from './compile.constants';
+import { JdkVersion } from '../constants/compile.constants';
 
 /**
  * javac编译参数

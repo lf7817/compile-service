@@ -11,7 +11,7 @@ import { Response } from 'express';
 import { CommonException } from 'src/common/exceptions/common.exception';
 import { ExceptionCode } from 'src/common/exceptions/constants/exception.constants';
 import { fileInterceptorUtil } from 'src/common/utils/file.interceptor.util';
-import { JavaCompileOptionsDto } from './compile.dto';
+import { JavaCompileOptionsDto } from './dto/compile.dto';
 import { CompileService } from './compile.service';
 
 @Controller('compile')
@@ -25,18 +25,28 @@ export class CompileController {
    * @returns
    */
   @Post('java')
-  @Header('Content-Type', 'application/octet-stream')
-  @UseInterceptors(fileInterceptorUtil('file', 'java')) // 拓展名不在这里校验了，太丑了
+  @UseInterceptors(fileInterceptorUtil('file', 'java'))
   async compileJava(
     @Res() res: Response,
     @UploadedFile() file: Express.Multer.File,
     @Body() options: JavaCompileOptionsDto,
   ) {
+    /**
+     * 如果file不存在抛出异常
+     */
     if (file == null) {
       throw new CommonException(ExceptionCode.NOT_UPLOAD_FILE);
     }
 
-    const path = await this.compileService.compileJava(file, options);
-    res.status(200).download(path);
+    /**
+     * 编译java
+     */
+    const { zipStream, filename } = await this.compileService.compileJava(
+      file,
+      options,
+    );
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    zipStream.pipe(res);
   }
 }
