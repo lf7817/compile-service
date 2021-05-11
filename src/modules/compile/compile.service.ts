@@ -27,7 +27,9 @@ export class CompileService {
       // TODO: 处理编译参数
 
       // 编译
-      const { stderr } = await this.execAsync(`javac ${file.path}`);
+      const { stderr } = await this.execAsync(
+        `javac -source 1.8 -target 1.8 ${file.path}`,
+      );
       // 生成编译信息
       await writeFile(`${file.destination}/compile-info.txt`, stderr);
 
