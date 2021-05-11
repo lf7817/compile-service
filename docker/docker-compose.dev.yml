@@ -1,0 +1,14 @@
+version: "3.5"
+
+services:
+    compile-service:
+        ports:
+            - 4000:4000
+        build: 
+            context: ../
+            dockerfile: Dockerfile.dev
+        container_name: 'compile-service'
+        volumes: 
+            - ../src:/usr/src/app/src
+            - ../test:/usr/src/app/test
+            - ../dist:/usr/src/app/dist
