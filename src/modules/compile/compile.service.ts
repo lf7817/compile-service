@@ -6,6 +6,7 @@ import { JavaCompileOptionsDto } from './dto/compile.dto';
 import { CommonException } from 'src/common/exceptions/common.exception';
 import { ExceptionCode } from 'src/common/exceptions/constants/exception.constants';
 import { zip } from 'compressing';
+import { classToPlain } from 'class-transformer';
 
 @Injectable()
 export class CompileService {
@@ -24,11 +25,23 @@ export class CompileService {
     options: JavaCompileOptionsDto,
   ) {
     try {
-      // TODO: 处理编译参数
+      // 处理编译参数
+      const optionString = Object.keys(classToPlain(options)).reduce(
+        (op, key) => {
+          if (key === 'target' || key === 'source' || key === 'encoding') {
+            op += ` -${key} ${options[key]}`;
+          } else {
+            op += ` -${key}`;
+          }
+
+          return op;
+        },
+        '',
+      );
 
       // 编译
       const { stderr } = await this.execAsync(
-        `javac -source 1.8 -target 1.8 ${file.path}`,
+        `javac ${optionString} ${file.path}`,
       );
       // 生成编译信息
       await writeFile(`${file.destination}/compile-info.txt`, stderr);

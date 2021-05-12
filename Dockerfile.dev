@@ -1,7 +1,6 @@
 FROM node:14
 
 # 安装jdk11
-
 WORKDIR /usr/local/java
 # # 拷贝安装包到jdk路径（会自动解压）
 RUN wget -P /usr/local/java http://115.231.255.14:81/download/jdk-11.0.10_linux-x64_bin.tar.gz
@@ -17,7 +16,7 @@ ENV CLASSPATH .:${JAVA_HOME}/lib:${JRE_HOME}/lib
 ENV PATH ${JAVA_HOME}/bin:$PATH
 
 
-# # 工作目录
+# 工作目录
 WORKDIR /usr/src/app
 # package.json到项目目录
 COPY package.json ./
