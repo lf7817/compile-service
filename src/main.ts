@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
+import * as compression from 'compression';
 import { AppModule } from './app.module';
 import { ParamValidateException } from './common/exceptions/param.validate.exception';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -8,6 +9,11 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  /**
+   * 启用gzip压缩
+   */
+  app.use(compression());
 
   /**
    * 全局注册transform拦截器
