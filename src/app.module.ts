@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
 import { MainModule } from './modules/main.module';
 import config from './config';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -9,6 +11,11 @@ import config from './config';
       isGlobal: true,
       expandVariables: true,
       envFilePath: ['.env.development', '.env'],
+    }),
+    WinstonModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) =>
+        configService.get<WinstonModuleOptions>('winston'),
     }),
     MainModule,
   ],

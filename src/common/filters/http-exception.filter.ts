@@ -4,12 +4,13 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-  Logger,
 } from '@nestjs/common';
-import * as moment from 'moment';
+import { Logger } from 'winston';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
+  constructor(private readonly logger: Logger) {}
+
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
@@ -37,8 +38,6 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
       }
     } catch (e) {}
 
-    Logger.log(exception, 'HttpExceptionFilter');
-
     const errorResponse = {
       status,
       message,
@@ -49,13 +48,14 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
       timestamp: new Date().getTime(),
     };
 
-    Logger.error(
-      `[${moment().format('YYYY-MM-DD HH:mm:ss')}] ${request.method} ${
-        request.url
-      }`,
-      JSON.stringify(errorResponse),
-      'HttpExceptionFilter',
-    );
+    this.logger.error({
+      message: [exception.message, exception.stack].join('\n'),
+    });
+    this.logger.error({
+      message: `${request.method} ${request.url} \n error: ${JSON.stringify(
+        errorResponse,
+      )}`,
+    });
 
     // 设置返回的状态码、请求头、发送错误信息
     response

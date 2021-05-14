@@ -6,9 +6,15 @@ import { AppModule } from './app.module';
 import { ParamValidateException } from './common/exceptions/param.validate.exception';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: false,
+  });
+
+  const nestWinston = app.get(WINSTON_MODULE_NEST_PROVIDER);
+  app.useLogger(nestWinston);
 
   /**
    * 启用gzip压缩
@@ -33,7 +39,7 @@ async function bootstrap() {
   /**
    * 全局注册错误过滤器
    */
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter(nestWinston.logger));
 
   /**
    * 获取配置文件service

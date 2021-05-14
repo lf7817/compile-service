@@ -29,16 +29,16 @@ WORKDIR /usr/src/app
 COPY package.json ./
 # 安装pm2
 RUN npm install -g pm2 --silent --no-cache --registry=https://registry.npm.taobao.org
-# 安装pm2-logrotate插件
-RUN pm2 install pm2-logrotate@2.7.0
-# 设置日志大小上限
-RUN pm2 set pm2-logrotate:retain 100M
-# 设置保留的日志文件个数
-RUN pm2 set pm2-logrotate:retain 30
-# 设置日志文件名中的日期格式
-RUN pm2 set pm2-logrotate:dateFormat 'YYYY-MM-DD_HH-mm-ss'
-# 每天晚上0点分割日志
-RUN pm2 set pm2-logrotate:rotateInterval '0 0 * * *'
+# # 安装pm2-logrotate插件
+# RUN pm2 install pm2-logrotate@2.7.0
+# # 设置日志大小上限
+# RUN pm2 set pm2-logrotate:retain 100M
+# # 设置保留的日志文件个数
+# RUN pm2 set pm2-logrotate:retain 30
+# # 设置日志文件名中的日期格式
+# RUN pm2 set pm2-logrotate:dateFormat 'YYYY-MM-DD_HH-mm-ss'
+# # 每天晚上0点分割日志
+# RUN pm2 set pm2-logrotate:rotateInterval '0 0 * * *'
 # 安装npm依赖
 RUN npm install --silent --no-cache --registry=https://registry.npm.taobao.org
 # 拷贝整个目录

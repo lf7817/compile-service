@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, LoggerService } from '@nestjs/common';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { writeFile, mkdir } from 'fs/promises';
@@ -8,9 +8,14 @@ import { ExceptionCode } from 'src/common/exceptions/constants/exception.constan
 import { zip } from 'compressing';
 import { classToPlain } from 'class-transformer';
 import { dirname } from 'path';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class CompileService {
+  constructor(
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
+  ) {}
   /**
    * exec转化成promise
    */
@@ -38,7 +43,11 @@ export class CompileService {
         filename: targetDir.split('/').pop() + '.zip',
       };
     } catch (e) {
-      throw new CommonException(ExceptionCode.COMPILE_FAIL, HttpStatus.OK, e);
+      throw new CommonException(
+        ExceptionCode.COMPILE_FAIL,
+        HttpStatus.OK,
+        e.errors,
+      );
     }
   }
 
@@ -61,6 +70,7 @@ export class CompileService {
     await mkdir(targetDir);
     // 生成命令
     const cmd = this.generateExecCmd(files, options, targetDir);
+    this.logger.debug(cmd);
 
     try {
       // 指定工作目录，并执行命令
