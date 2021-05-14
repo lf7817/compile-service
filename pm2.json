@@ -1,0 +1,15 @@
+{
+    "apps": [
+        {
+            "name": "compile-service",
+            "cwd": "/usr/src/app",
+            "script": "/usr/src/app/dist/main.js",
+            "log_date_format": "YYYY-MM-DD HH:mm:ss Z",
+            "error_file": "/usr/src/app/dist/logs/error.log",
+            "out_file": "/usr/src/app/dist/logs/out.log",
+            "pid_file": "/usr/src/app/dist/logs/pid.pid",
+            "exec_interpreter": "nodejs",
+            "exec_mode": "fork"
+        }
+    ]
+}
