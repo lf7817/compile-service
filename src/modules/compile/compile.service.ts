@@ -133,7 +133,7 @@ export class CompileService {
       // 处理go参数
       cmd = `/usr/local/go/${
         options.version
-      }/go/bin/go build -i ${opt} ${files.map((file) => file.path).join(' ')}`;
+      }/go/bin/go build ${opt} ${files.map((file) => file.path).join(' ')}`;
     }
 
     return cmd;
